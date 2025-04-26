@@ -5,13 +5,14 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import Filter from './Filter';
+import { FilterTypes, FilterMap, getFilters } from './Filter';
+
 
 interface ChipData {
-  key: number;
+  key: string;
   label: string;
+  type: FilterTypes;
 }
 
 const ListItem = styled('li')(({ theme }) => ({
@@ -19,34 +20,30 @@ const ListItem = styled('li')(({ theme }) => ({
 }));
 
 function Sidebar(){
-  const [chipData, setChipData] = React.useState<ChipData[]>([
-    { key: 0, label: 'test' },
-  ]);
+  const [chipData, setChipData] = React.useState<ChipData[]>([]);
+  const [statusMap, setStatusMap] = React.useState<FilterMap>(getFilters(FilterTypes.STATUS));
+  const [brandMap, setBrandMap] = React.useState<FilterMap>(getFilters(FilterTypes.BRAND));
   const [expanded, setExpanded] = React.useState<string | false>(false);
-
-  const [statusChecked, setStatusChecked] = React.useState<{ [label: string]: boolean }>({
-    AVAILABLE: false,
-    OUT_OF_STOCK: false,
-  });
   
-  const handleStatusChange = (label: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setStatusChecked({
-      ...statusChecked,
-      [label]: event.target.checked,
-    });
-    setChipData((chips) => {
-      // Si se selecciona, agregar el chip si no existe
-      if (event.target.checked) {
-        if (!chips.some(chip => chip.label === label)) {
-          return [...chips, { key: Date.now(), label }];
-        }
-        return chips;
-      }
-      // Si se deselecciona, eliminar el chip
-      return chips.filter(chip => chip.label !== label);
-    });
-  };
+  const syncChipsWithFilters = (status: FilterMap, brand: FilterMap) => {
+    const statusChips = Object.entries(status)
+      .filter(([_, checked]) => checked)
+      .map(([label]) => ({
+        key: `status-${label}`,
+        label,
+        type: FilterTypes.STATUS,
+      }));
 
+    const brandChips = Object.entries(brand)
+      .filter(([_, checked]) => checked)
+      .map(([label]) => ({
+        key: `brand-${label}`,
+        label,
+        type: FilterTypes.BRAND,
+      }));
+
+    setChipData([...statusChips, ...brandChips]);
+  };
 
   const handleChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -54,74 +51,73 @@ function Sidebar(){
     };
 
   const handleDelete = (chipToDelete: ChipData) => () => {
-    setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
+    if (chipToDelete.type === FilterTypes.STATUS) {
+      const newStatusMap = { ...statusMap, [chipToDelete.label]: false };
+      setStatusMap(newStatusMap);
+      syncChipsWithFilters(newStatusMap, brandMap);
+    } else if (chipToDelete.type === FilterTypes.BRAND) {
+      const newBrandMap = { ...brandMap, [chipToDelete.label]: false };
+      setBrandMap(newBrandMap);
+      syncChipsWithFilters(statusMap, newBrandMap);
+    }
+  };
+  const handleStatusFilterChange = (checkedMap: FilterMap) => {
+    setStatusMap(checkedMap);
+    syncChipsWithFilters(checkedMap, brandMap);
+  };
+  const handleBrandFilterChange = (checkedMap: FilterMap) => {
+    setBrandMap(checkedMap);
+    syncChipsWithFilters(statusMap, checkedMap);
   };
 
   return (
     <div>
       {chipData.map((data) => {
-        let icon;
         return (
           <ListItem key={data.key}>
             <Chip
-              icon={icon}
-              label={data.label}
+              label={data.label.replace(/_/g, ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase())}
               onDelete={ handleDelete(data)}
             />
           </ListItem>
         );
       })}
-       <div>
-      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-        <AccordionSummary
-        // expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
-        >
-          <Typography component="span" sx={{ width: '33%', flexShrink: 0 }}>
-            Status
-          </Typography>
-          <Typography component="span" sx={{ color: 'text.secondary' }}>
-            Available, un-available...
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <FormGroup>
-            <FormControlLabel control={
-              <Checkbox 
-                checked={statusChecked['AVAILABLE']}
-                onChange={handleStatusChange('AVAILABLE')}
-              />
-              } 
-              label="Available" 
-            />
-            <FormControlLabel control={<Checkbox 
-              checked={statusChecked['OUT_OF_STOCK']}
-              onChange={handleStatusChange('OUT_OF_STOCK')}
-              />
-              }
-              label="Out of stock" 
-            />
-          </FormGroup>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-        <AccordionSummary
-        // expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2bh-content"
-          id="panel2bh-header"
-        >
-          <Typography component="span" sx={{ width: '33%', flexShrink: 0 }}>
-            Brands
-          </Typography>
-          <Typography component="span" sx={{ color: 'text.secondary' }}>
-          Samsung, LG, Sony, MARQUIS...
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-        </AccordionDetails>
-      </Accordion>
-    </div>
+      <div>
+        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+          <AccordionSummary
+          // expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1bh-content"
+            id="panel1bh-header"
+          >
+            <Typography component="span" sx={{ width: '33%', flexShrink: 0 }}>
+              Status
+            </Typography>
+            <Typography component="span" sx={{ color: 'text.secondary' }}>
+              Available, un-available...
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Filter type={FilterTypes.STATUS} onChange={handleStatusFilterChange} checkedMap={statusMap}/>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+          <AccordionSummary
+          // expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel2bh-content"
+            id="panel2bh-header"
+          >
+            <Typography component="span" sx={{ width: '33%', flexShrink: 0 }}>
+              Brands
+            </Typography>
+            <Typography component="span" sx={{ color: 'text.secondary' }}>
+              Samsung, LG, Sony, MARQUIS...
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Filter type={FilterTypes.BRAND} onChange={handleBrandFilterChange} checkedMap={brandMap}/>
+          </AccordionDetails>
+        </Accordion>
+      </div>
     </div>
   );
 }
