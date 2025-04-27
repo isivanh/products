@@ -1,124 +1,121 @@
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Chip from '@mui/material/Chip';
+import {Fragment, useState, SyntheticEvent, Dispatch, SetStateAction } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
-import Filter from './Filter';
-import { FilterTypes, FilterMap, getFilters } from './Filter';
+import FilterBox from './FilterBox';
+import { getFilters } from './FilterBox';
+import {FilterTypes, ChipData, FilterMap, Filter} from '../types/types'
+import {getFilterFromFilterMap, syncChipsWithFilters} from '../helpers/helpers'
+import { ListChip } from './ListChip';
 
-
-interface ChipData {
-  key: string;
-  label: string;
-  type: FilterTypes;
+interface SidebarProps {
+  setFilter: Dispatch<SetStateAction<Filter>>;
 }
 
-const ListItem = styled('li')(({ theme }) => ({
-  margin: theme.spacing(0.5),
-}));
-
-function Sidebar(){
-  const [chipData, setChipData] = React.useState<ChipData[]>([]);
-  const [statusMap, setStatusMap] = React.useState<FilterMap>(getFilters(FilterTypes.STATUS));
-  const [brandMap, setBrandMap] = React.useState<FilterMap>(getFilters(FilterTypes.BRAND));
-  const [expanded, setExpanded] = React.useState<string | false>(false);
-  
-  const syncChipsWithFilters = (status: FilterMap, brand: FilterMap) => {
-    const statusChips = Object.entries(status)
-      .filter(([_, checked]) => checked)
-      .map(([label]) => ({
-        key: `status-${label}`,
-        label,
-        type: FilterTypes.STATUS,
-      }));
-
-    const brandChips = Object.entries(brand)
-      .filter(([_, checked]) => checked)
-      .map(([label]) => ({
-        key: `brand-${label}`,
-        label,
-        type: FilterTypes.BRAND,
-      }));
-
-    setChipData([...statusChips, ...brandChips]);
-  };
+const Sidebar = ({setFilter}: SidebarProps) => {
+  const [chipData, setChipData] = useState<ChipData[]>([]);
+  const [productStatus, setProductStatus] = useState<FilterMap>(getFilters(FilterTypes.STATUS));
+  const [productBrand, setProductBrand] = useState<FilterMap>(getFilters(FilterTypes.BRAND));
+  const [expanded, setExpanded] = useState<string | false>(false);
 
   const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+    (panel: string) => (_: SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false);
     };
 
-  const handleDelete = (chipToDelete: ChipData) => () => {
-    if (chipToDelete.type === FilterTypes.STATUS) {
-      const newStatusMap = { ...statusMap, [chipToDelete.label]: false };
-      setStatusMap(newStatusMap);
-      syncChipsWithFilters(newStatusMap, brandMap);
-    } else if (chipToDelete.type === FilterTypes.BRAND) {
-      const newBrandMap = { ...brandMap, [chipToDelete.label]: false };
-      setBrandMap(newBrandMap);
-      syncChipsWithFilters(statusMap, newBrandMap);
-    }
-  };
   const handleStatusFilterChange = (checkedMap: FilterMap) => {
-    setStatusMap(checkedMap);
-    syncChipsWithFilters(checkedMap, brandMap);
+    setProductStatus(checkedMap);
+    setChipData(syncChipsWithFilters(checkedMap, productBrand));
+    setFilter(getFilterFromFilterMap(checkedMap, productBrand))
   };
+
   const handleBrandFilterChange = (checkedMap: FilterMap) => {
-    setBrandMap(checkedMap);
-    syncChipsWithFilters(statusMap, checkedMap);
+    setProductBrand(checkedMap);
+    setChipData(syncChipsWithFilters(productStatus, checkedMap));
+    setFilter(getFilterFromFilterMap(productStatus, checkedMap))
   };
 
   return (
-    <div>
-      {chipData.map((data) => {
-        return (
-          <ListItem key={data.key}>
-            <Chip
-              label={data.label.replace(/_/g, ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase())}
-              onDelete={ handleDelete(data)}
-            />
-          </ListItem>
-        );
-      })}
-      <div>
-        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-          <AccordionSummary
-          // expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1bh-content"
-            id="panel1bh-header"
-          >
-            <Typography component="span" sx={{ width: '33%', flexShrink: 0 }}>
-              Status
-            </Typography>
-            <Typography component="span" sx={{ color: 'text.secondary' }}>
-              Available, un-available...
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Filter type={FilterTypes.STATUS} onChange={handleStatusFilterChange} checkedMap={statusMap}/>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-          <AccordionSummary
-          // expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel2bh-content"
-            id="panel2bh-header"
-          >
-            <Typography component="span" sx={{ width: '33%', flexShrink: 0 }}>
-              Brands
-            </Typography>
-            <Typography component="span" sx={{ color: 'text.secondary' }}>
-              Samsung, LG, Sony, MARQUIS...
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Filter type={FilterTypes.BRAND} onChange={handleBrandFilterChange} checkedMap={brandMap}/>
-          </AccordionDetails>
-        </Accordion>
-      </div>
-    </div>
+    <Fragment>
+      <Typography variant="h5" sx={{ mb: 2, color: 'primary.main' }}>
+        Filters
+      </Typography>
+      <ListChip
+        chipData={chipData}
+        setProductStatus={setProductStatus}
+        setProductBrand={setProductBrand}
+        setChipData={setChipData}
+        productStatus={productStatus}
+        productBrand={productBrand}
+        setFilter={setFilter}
+      />
+      <Accordion 
+        expanded={expanded === 'panel1'}
+        onChange={handleChange('panel1')}
+        sx={{
+          backgroundColor: 'background.default',
+          borderRadius: 2,
+          mb: 2,
+          boxShadow: 1,
+          border: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <AccordionSummary
+          sx={{
+            fontWeight: 500,
+            color: 'primary.main',
+            backgroundColor: 'grey.100',
+            borderRadius: '8px 8px 0 0',
+            minHeight: 48,
+          }}
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography component="span" sx={{ width: '33%', flexShrink: 0 }}>
+            Status
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <FilterBox filterType={FilterTypes.STATUS} onChange={handleStatusFilterChange} checkedMap={productStatus}/>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion 
+        expanded={expanded === 'panel2'}
+        onChange={handleChange('panel2')}
+        sx={{
+          backgroundColor: 'background.default',
+          borderRadius: 2,
+          mb: 2,
+          boxShadow: 1,
+          border: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <AccordionSummary
+          sx={{
+            fontWeight: 500,
+            color: 'primary.main',
+            backgroundColor: 'grey.100',
+            borderRadius: '8px 8px 0 0',
+            minHeight: 48,
+          }}
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2bh-content"
+          id="panel2bh-header"
+        >
+          <Typography component="span" sx={{ width: '33%', flexShrink: 0 }}>
+            Brands
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <FilterBox filterType={FilterTypes.BRAND} onChange={handleBrandFilterChange} checkedMap={productBrand}/>
+        </AccordionDetails>
+      </Accordion>
+    </Fragment>
   );
 }
 export default Sidebar;

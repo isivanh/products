@@ -1,38 +1,39 @@
 import { useRef, useState, useMemo, useCallback } from 'react'
 import { searchProducts } from '../services/products'
-import { Product } from '../models/product'
+import { Product } from '../types/product'
+import { Filter, Paging, PagingResponse } from '../types/types'
 
-export function useProducts (search: string, sort: boolean ) {
-  const [products, setProducts] = useState<Array<Product>>([])
-  const [loading, setLoading] = useState(false)
+export function useProducts (filter: Filter, paging: Paging, sort: boolean ) {
+  const [products, setProducts] = useState<Array<Product>>([]);
+  const [loading, setLoading] = useState(false);
+  const [pagingResponse, setPagingResponse] = useState<PagingResponse>();
 
-  const [, setError] = useState<string>('')
-  const previousSearch = useRef(search)
+  const [error, setError] = useState<string>('')
+  const previousSearch = useRef<{filter: Filter, paging: Paging}>({filter, paging})
 
-  const getProducts = useCallback(async ( search: string ) => {
-    // if (search === previousSearch.current) return
+  const getProducts = useCallback(async ( filter: Filter, paging: Paging ) => {
+    if (filter === previousSearch.current.filter && paging === previousSearch.current.paging) return
 
     try {
       setLoading(true)
       setError('')
-      previousSearch.current = search
-      const newProducts = await searchProducts()
-      console.log(newProducts);
-      setProducts(newProducts)
+      previousSearch.current.filter = filter
+      const newProducts = await searchProducts(filter, paging)
+      setProducts(newProducts.products)
+      setPagingResponse(newProducts.paging)
     } catch (error) {
-      console.error('Error:', error);
-      //setError(error)
+      setError(error instanceof Error ? error.message : String(error));
     } finally {
       setLoading(false)
     }
   }, [])
 
   const sortedProducts = useMemo(() => {
-        if (!products) return;
+    if (!products) return;
     return sort
       ? [...products].sort((a, b) => a.name.localeCompare(b.name))
       : products
   }, [sort, products])
 
-  return { products: sortedProducts, getProducts, loading }
+  return { products: sortedProducts, pagingResponse, getProducts, loading, error }
 }
