@@ -6,7 +6,7 @@ export interface ChipData {
 
 export enum FilterTypes {
   STATUS,
-  BRAND
+  BRAND,
 }
 
 export interface FilterMap {

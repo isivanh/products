@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { ListChip } from './ListChip';
-import { FilterTypes, ChipData} from '../../types/types';
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { ListChip } from "./ListChip";
+import { FilterTypes, ChipData } from "../../types/types";
 
-describe('ListChip', () => {
+describe("ListChip", () => {
   const baseProps = {
     setProductStatus: jest.fn(),
     setProductBrand: jest.fn(),
@@ -13,17 +13,21 @@ describe('ListChip', () => {
     productBrand: {},
   };
 
-  it('debería renderizar correctamente (snapshot)', () => {
-    const chipData: ChipData[] = [{ key: '1', label: 'test', type: FilterTypes.STATUS }];
+  it("debería renderizar correctamente (snapshot)", () => {
+    const chipData: ChipData[] = [
+      { key: "1", label: "test", type: FilterTypes.STATUS },
+    ];
     const { asFragment } = render(
-      <ListChip {...baseProps} chipData={chipData} />
+      <ListChip {...baseProps} chipData={chipData} />,
     );
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('debería mostrar el texto correcto', () => {
-    const chipData: ChipData[] = [{ key: '2', label: 'test', type: FilterTypes.BRAND }];
+  it("debería mostrar el texto correcto", () => {
+    const chipData: ChipData[] = [
+      { key: "2", label: "test", type: FilterTypes.BRAND },
+    ];
     render(<ListChip {...baseProps} chipData={chipData} />);
-    expect(screen.getByText('test')).toBeInTheDocument();
+    expect(screen.getByText("test")).toBeInTheDocument();
   });
 });

@@ -25,6 +25,7 @@ jobs:
           run: |
             npm test -- -u
   deploy-frontend:
+    needs: test
     runs-on: ubuntu-latest
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

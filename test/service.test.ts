@@ -1,42 +1,42 @@
-import {describe, expect, test} from '@jest/globals';
-import {searchProducts} from '../src/services/products';
-import { Filter, Paging, PagingResponse } from '../src/types/types';
+import { describe, expect, test } from "@jest/globals";
+import { searchProducts } from "../src/services/products";
+import { Filter, Paging, PagingResponse } from "../src/types/types";
 
 global.fetch = jest.fn();
 
-describe('service', () => {
+describe("service", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  const filter: Filter = { status: ['AVAILABLE'], brand: 'Sony' };
+  const filter: Filter = { status: ["AVAILABLE"], brand: "Sony" };
   const paging: Paging = { page: 0, size: 20 };
 
-  test('get products', async () => {
+  test("get products", async () => {
     const mockProducts = [
       {
-        id: '1',
-        name: 'Test Product',
-        description: 'Test Description',
+        id: "1",
+        name: "Test Product",
+        description: "Test Description",
         price: 99.99,
-        brand: 'Test Brand',
-        category: 'Test Category',
+        brand: "Test Brand",
+        category: "Test Category",
         prices: {
           normalPrice: 100,
           offerPrice: 90,
           lowest: 80,
         },
-        storeName: 'Test Store',
-        productId: '1',
-        sku: 'SKU1'
-      }
+        storeName: "Test Store",
+        productId: "1",
+        sku: "SKU1",
+      },
     ];
 
     const mockPaging: PagingResponse = {
       size: 20,
       total: 1,
       pages: 1,
-      currentPage: 0
+      currentPage: 0,
     };
 
     (global.fetch as jest.Mock).mockResolvedValueOnce({

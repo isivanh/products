@@ -1,19 +1,19 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#007bff',
+      main: "#007bff",
     },
     secondary: {
-      main: '#6c757d',
+      main: "#6c757d",
     },
     background: {
-      default: '#f8f9fa',
+      default: "#f8f9fa",
     },
   },
   typography: {
-    fontFamily: 'Roboto, sans-serif',
+    fontFamily: "Roboto, sans-serif",
     fontSize: 14,
   },
   components: {
@@ -21,7 +21,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
-          textTransform: 'none',
+          textTransform: "none",
         },
       },
     },

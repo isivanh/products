@@ -1,16 +1,21 @@
-import {Product} from '../types/product'
-import { Filter, Paging, PagingResponse, SearchProductsParams} from '../types/types';
+import { Product } from "../types/product";
+import {
+  Filter,
+  Paging,
+  PagingResponse,
+  SearchProductsParams,
+} from "../types/types";
 
-const API_KEY = 'ff236fbd608a479b8d2025a3791bb848'
-const baseUrl = 'https://services.retailcompass.com/api/pricing/v1/products';
+const API_KEY = "ff236fbd608a479b8d2025a3791bb848";
+const baseUrl = "https://services.retailcompass.com/api/pricing/v1/products";
 
 export const searchProducts = async (
   filters: Filter,
-  paging: Paging
-): Promise<{ products: Array<Product>, paging: PagingResponse }> => {
+  paging: Paging,
+): Promise<{ products: Array<Product>; paging: PagingResponse }> => {
   try {
     const url = new URL(baseUrl);
-    url.searchParams.append('apikey', API_KEY);
+    url.searchParams.append("apikey", API_KEY);
 
     const body: SearchProductsParams = {
       filters,
@@ -18,9 +23,9 @@ export const searchProducts = async (
     };
 
     const options = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
     };
@@ -32,8 +37,7 @@ export const searchProducts = async (
     const pagingResponse: PagingResponse = json.paging;
 
     return { products, paging: pagingResponse };
-  } catch (e) {
-    throw new Error('Error searching products');
+  } catch {
+    throw new Error("Error searching products");
   }
 };
-
