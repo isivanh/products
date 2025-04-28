@@ -1,7 +1,7 @@
-import {FilterTypes, ChipData, FilterMap, Filter} from '../types/types'
+import {FilterTypes, ChipData, FilterMap, Filter} from '../../types/types'
 import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
-import {syncChipsWithFilters, getFilterFromFilterMap} from '../helpers/helpers'
+import {syncChipsWithFilters, getFilterFromFilterMap, formatLabel} from '../../helpers/helpers'
 import {Dispatch, SetStateAction} from 'react'
 
 const ListItem = styled('li')(({ theme }) => ({
@@ -32,18 +32,20 @@ export const ListChip = ({chipData, setProductStatus, setProductBrand, setChipDa
       const newProductBrand = { ...productBrand, [chipToDelete.label]: false };
       setProductBrand(newProductBrand);
       setChipData(syncChipsWithFilters(productStatus, newProductBrand));
-      setFilter(getFilterFromFilterMap(productStatus, newProductBrand))
+      setFilter(getFilterFromFilterMap(productStatus, newProductBrand));
     }
   };
 
   const mappedChipItems = chipData?.map((data) => 
     <ListItem key={data.key}>
       <Chip
-        label={data.label.replace(/_/g, ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase())}
-        onDelete={ handleDelete(data)}
+        label={data.type === FilterTypes.STATUS? formatLabel(data.label): data.label}
+        onDelete={handleDelete(data)}
+        sx={{ textTransform: 'capitalize', letterSpacing: 0.5 }}
       />
     </ListItem>
-  )
+  );
+
   return (
     <ul style={{ padding: 0, margin: 0 }}>
       {mappedChipItems}

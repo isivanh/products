@@ -3,7 +3,8 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Radio from '@mui/material/Radio';
-import {FilterTypes, FilterMap} from '../types/types'
+import {FilterTypes, FilterMap} from '../../types/types'
+import { formatLabel } from '../../helpers/helpers';
 
 const getStatus = (): Array<string> => ['AVAILABLE','OUT_OF_STOCK'];
 
@@ -32,6 +33,7 @@ interface FilterBoxProps {
 
 const FilterBox = (props : FilterBoxProps) => {
   const {filterType, checkedMap, onChange} = props;
+  
   const handleChange = (label: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
     const newCheckedMap = {
       ...checkedMap,
@@ -55,26 +57,34 @@ const FilterBox = (props : FilterBoxProps) => {
   const mappedCheckboxGroup = Object.keys(checkedMap).map((label) => (
     <FormControlLabel
       key={label}
+      sx={{
+        textTransform: 'capitalize',
+        letterSpacing: 0.5,
+      }}
       control={
         <Checkbox
           checked={checkedMap[label]}
           onChange={handleChange(label)}
         />
       }
-      label={label.replace(/_/g, ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase())}
+      label={filterType === FilterTypes.STATUS? formatLabel(label): label}
     />
   ))
 
   const mappedRadioGroup = Object.keys(checkedMap).map((label) => (
     <FormControlLabel
       key={label}
+      sx={{
+        textTransform: 'capitalize',
+        letterSpacing: 0.5,
+      }}
       control={
         <Radio
           checked={checkedMap[label]}
           onChange={handleRadio(label)}
         />
       }
-      label={label.replace(/_/g, ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase())}
+      label={filterType === FilterTypes.STATUS? formatLabel(label): label}
     />
   ))
 

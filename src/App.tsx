@@ -1,9 +1,9 @@
-import { Grid, Typography, Container } from '@mui/material'
-import './App.css'
-import { ProductTable } from './components/ProductTable'
-import Sidebar from './components/Sidebar'
+import { Grid, Container } from '@mui/material'
+import { ProductTable } from './components/ProductTable/ProductTable'
+import Sidebar from './components/Sidebar/Sidebar'
 import { useState } from 'react'
 import { Filter } from './types/types'
+import Logo from './assets/logo.svg';
 
 const getDefaultFilter = ():Filter => ({ status: [] })
 
@@ -14,9 +14,7 @@ function App() {
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4, bgcolor: 'background.default' }}>
       <Grid container spacing={2}>
         <Grid size={12}>
-          <Typography variant="h4" component="h1" sx={{ mb: 2, color: 'secondary.main' }}>
-            Retail Compass
-          </Typography>
+          <img src={Logo} alt="" height="48"/>
         </Grid>
         <Grid size={{ xs: 12, md: 3 }}>
           <Sidebar setFilter={setFilter} />

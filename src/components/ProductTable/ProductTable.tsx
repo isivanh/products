@@ -7,17 +7,16 @@ import TableRow from '@mui/material/TableRow';
 import TableBody from '@mui/material/TableBody';
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem'
-import { useProducts } from '../hooks/useProducts';
-import { Filter, Paging } from '../types/types';
+import { useProducts } from '../../hooks/useProducts';
+import { Filter, Paging } from '../../types/types';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { Prices } from '../types/product';
+import { Prices } from '../../types/product';
+import { formatLabel, formatPrice } from '../../helpers/helpers';
 
 const getDefaultPaging = ():Paging => ({ page: 0, size: 20})
 
 export const ProductTable = ({filter}: {filter: Filter}) => {
-  console.log('PRODUCTABLE::UPDATE')
-  console.log(filter);
   const [paging, setPaging] = useState<Paging>(getDefaultPaging);
   const { products, pagingResponse ,getProducts, error } = useProducts(filter, paging, false );
 
@@ -27,7 +26,6 @@ export const ProductTable = ({filter}: {filter: Filter}) => {
   
   useEffect(() => {
     getProducts(filter, paging);
-    console.log(paging)
   }, [filter, paging]);
 
   const handleChange = (_: ChangeEvent<unknown>, value: number) => {
@@ -78,27 +76,30 @@ export const ProductTable = ({filter}: {filter: Filter}) => {
                 },
               }}
             >
-              <TableCell>Name </TableCell>
+              <TableCell>Name</TableCell>
               <TableCell align="right">Store</TableCell>
               <TableCell align="right">Regular price</TableCell>
               <TableCell align="right">Offer price</TableCell>
               <TableCell align="right">Lowest price</TableCell>
-              <TableCell align="right">Dicount</TableCell>
+              <TableCell align="right">Discount</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {products?.map((product) => (
               <TableRow
                 key={product.productId}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                sx={{ 
+                  '&:last-child td, &:last-child th': { border: 0 },
+                  textTransform: 'capitalize',
+                }}
               >
                 <TableCell component="th" scope="row">
-                  {product.name.replace(/_/g, ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase())}
+                  {formatLabel(product.name)}
                 </TableCell>
                 <TableCell align="right">{product.storeName}</TableCell>
-                <TableCell align="right">${product.prices.normalPrice}</TableCell>
-                <TableCell align="right">${product.prices.offerPrice}</TableCell>
-                <TableCell align="right">${product.prices.lowest}</TableCell>
+                <TableCell align="right">{formatPrice(product.prices.normalPrice)}</TableCell>
+                <TableCell align="right">{formatPrice(product.prices.offerPrice)}</TableCell>
+                <TableCell align="right">{formatPrice(product.prices.lowest)}</TableCell>
                 <TableCell align="right">{calculateDiscount(product.prices)}%</TableCell>
               </TableRow>
             ))}

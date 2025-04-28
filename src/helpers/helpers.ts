@@ -31,3 +31,12 @@ export const getFilterFromFilterMap = (status: FilterMap, brand: FilterMap): Fil
   
   return {status: statusFilter, brand: brandFilter }
 }
+
+export const formatLabel = (label: string): string => 
+  label.replace(/_/g, ' ').toLowerCase();
+
+
+export const formatPrice = (value: number) =>
+  Number.isFinite(value)
+    ? `$ ${value.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : '-';

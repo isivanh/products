@@ -4,11 +4,11 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
-import FilterBox from './FilterBox';
-import { getFilters } from './FilterBox';
-import {FilterTypes, ChipData, FilterMap, Filter} from '../types/types'
-import {getFilterFromFilterMap, syncChipsWithFilters} from '../helpers/helpers'
-import { ListChip } from './ListChip';
+import FilterBox from '../FilterBox/FilterBox';
+import { getFilters } from '../FilterBox/FilterBox';
+import {FilterTypes, ChipData, FilterMap, Filter} from '../../types/types'
+import {getFilterFromFilterMap, syncChipsWithFilters} from '../../helpers/helpers'
+import { ListChip } from '../ListChip/ListChip';
 
 interface SidebarProps {
   setFilter: Dispatch<SetStateAction<Filter>>;
@@ -39,7 +39,12 @@ const Sidebar = ({setFilter}: SidebarProps) => {
 
   return (
     <Fragment>
-      <Typography variant="h5" sx={{ mb: 2, color: 'primary.main' }}>
+      <Typography 
+        variant="h6" 
+        sx={{ 
+          mb: 2,
+        }}
+      >
         Filters
       </Typography>
       <ListChip
@@ -66,7 +71,7 @@ const Sidebar = ({setFilter}: SidebarProps) => {
         <AccordionSummary
           sx={{
             fontWeight: 500,
-            color: 'primary.main',
+            color: 'secondary.main',
             backgroundColor: 'grey.100',
             borderRadius: '8px 8px 0 0',
             minHeight: 48,
@@ -98,7 +103,7 @@ const Sidebar = ({setFilter}: SidebarProps) => {
         <AccordionSummary
           sx={{
             fontWeight: 500,
-            color: 'primary.main',
+            color: 'secondary.main',
             backgroundColor: 'grey.100',
             borderRadius: '8px 8px 0 0',
             minHeight: 48,
