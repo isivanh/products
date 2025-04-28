@@ -6,9 +6,6 @@ on:
 jobs:
   test:
       runs-on: ubuntu-latest
-      strategy:
-        matrix:
-          service: [orders, kitchen, warehouse]
       steps:
         - name: Checkout Repository
           uses: actions/checkout@v4
