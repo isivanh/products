@@ -4,7 +4,7 @@ on:
     branches:
       - main 
 jobs:
-  test:
+  lint-test:
       runs-on: ubuntu-latest
       steps:
         - name: Checkout Repository
@@ -21,11 +21,16 @@ jobs:
           run: |
             npm ci
 
+        - name: Run lint
+          run: |
+            npm run lint
+
         - name: Run tests
           run: |
             npm test -- -u
+
   deploy-frontend:
-    needs: test
+    needs: lint-test
     runs-on: ubuntu-latest
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
