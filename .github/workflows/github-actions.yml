@@ -23,7 +23,7 @@ jobs:
 
         - name: Run tests
           run: |
-            npm jest
+            npm test -- -u
   deploy-frontend:
     runs-on: ubuntu-latest
     env:
