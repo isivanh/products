@@ -1,4 +1,4 @@
-# Retail Compass Chanllege
+# Retail Compass Challenge
 
 Bienvenidos a mi solución al reto de Retail Compass.
 
