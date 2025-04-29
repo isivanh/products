@@ -5,7 +5,7 @@ import {
   PagingResponse,
   SearchProductsParams,
 } from "../types/types";
-import {API_KEY} from "./config"
+import { API_KEY } from "./config";
 
 const baseUrl = "https://services.retailcompass.com/api/pricing/v1/products";
 
