@@ -1,5 +1,5 @@
-jest.mock('../src/services/config', () => ({
-  API_KEY: 'test-api-key'
+jest.mock("./config", () => ({
+  API_KEY: "test-api-key",
 }));
 import { describe, expect, test } from "@jest/globals";
 import { searchProducts } from "./products";
