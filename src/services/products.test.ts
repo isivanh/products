@@ -1,6 +1,9 @@
+jest.mock('../src/services/config', () => ({
+  API_KEY: 'test-api-key'
+}));
 import { describe, expect, test } from "@jest/globals";
-import { searchProducts } from "../src/services/products";
-import { Filter, Paging, PagingResponse } from "../src/types/types";
+import { searchProducts } from "./products";
+import { Filter, Paging, PagingResponse } from "../types/types";
 
 global.fetch = jest.fn();
 
