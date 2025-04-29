@@ -5,8 +5,8 @@ import {
   PagingResponse,
   SearchProductsParams,
 } from "../types/types";
+import {API_KEY} from "./config"
 
-const API_KEY = "ff236fbd608a479b8d2025a3791bb848";
 const baseUrl = "https://services.retailcompass.com/api/pricing/v1/products";
 
 export const searchProducts = async (
